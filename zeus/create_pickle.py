@@ -8,6 +8,7 @@ import numpy as np
 parser = argparse.ArgumentParser()
 parser.add_argument("name", help="Name of the dataset")
 parser.add_argument("split", choices=["train", "dev", "test"], help="Which split to use")
+parser.add_argument("--image_suffix", default="", type=str, help="Suffix to add to every image name")
 args = parser.parse_args()
 
 with open(os.path.join(args.name, f"samples.{args.split}.txt"), mode="r") as split_file:
@@ -18,7 +19,7 @@ for basepath in samples:
     image = None
     for extension in ["png", "jpg"]:
         try:
-            with open(os.path.join(args.name, f"{basepath}.{extension}"), mode="rb") as image_file:
+            with open(os.path.join(args.name, f"{basepath}{args.image_suffix}.{extension}"), mode="rb") as image_file:
                 image = image_file.read()
         except FileNotFoundError:
             pass
