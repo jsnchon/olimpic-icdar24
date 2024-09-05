@@ -47,6 +47,11 @@ python3 zeus.py --load zeus-olimpic-1.0-2024-02-12.model --exp TARGET_DIRECTORY 
 The predictions are stored in the `TARGET_DIRECTORY`, togehter with the SER
 metrics.
 
+- We have also released the `zeus-grandstaff-lmx-1.0-2024-02-12.model` and
+  `zeus-camera-grandstaff-lmx-1.0-2024-02-12.model` models trained on the
+  (Camera) GrandStaff LMX datasets. You can download them also from
+  https://github.com/ufal/olimpic-icdar24/releases.
+
 Computing TEDn Metric
 ---------------------
 
