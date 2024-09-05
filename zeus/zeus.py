@@ -31,6 +31,7 @@ parser.add_argument("--height", default=192, type=int, help="Image height.")
 parser.add_argument("--load", default=None, type=str, help="Load weights from model and predict.")
 parser.add_argument("--max_predict_length", default=700, type=int, help="Maximum prediction sequence length.")
 parser.add_argument("--max_train_length", default=500, type=int, help="Maximum training sequence length.")
+parser.add_argument("--max_width", default=None, type=int, help="Maximum image width.")
 parser.add_argument("--rnn_dim", default=192, type=int, help="RNN dimension.")
 parser.add_argument("--rnn_layers", default=2, type=int, help="RNN layers.")
 parser.add_argument("--rnn_layers_decoder", default=1, type=int, help="RNN decoder layers.")
@@ -124,7 +125,7 @@ class LMXDataset:
                         image = tf.clip_by_value((image - l) / (r - l), 0., 1.)
                 elif transformation:
                     raise ValueError(f"The transformation '{transformation}' is unknown.")
-            image = tf.image.resize(image, size=[self._args.height, tf.int32.max], preserve_aspect_ratio=True, antialias=True)
+            image = tf.image.resize(image, size=[self._args.height, self._args.max_width or tf.int32.max], preserve_aspect_ratio=True, antialias=True)
             return image, tags
         def augment(image, tags):
             for augmentation, *parameters in map(lambda part: part.split(":"), self._args.augment.split(",")):
