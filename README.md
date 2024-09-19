@@ -131,7 +131,7 @@ If you publish material based on the LMX linearizer or the LMX data, we request 
 
 ## References
 
-\[1\] Jiří Mayer, Milan Straka, Jan Hajič jr., Pavel Pecina. Practical End-to-End Optical Music Recognition for Pianoform Music. *18th International Conference on Document Analysis and Recognition, ICDAR 2024.* Athens, Greece, August 30 - September 22, pp. 55-73, 2024.<br>
+\[1\] Jiří Mayer, Milan Straka, Jan Hajič jr., Pavel Pecina. Practical End-to-End Optical Music Recognition for Pianoform Music. *18th International Conference on Document Analysis and Recognition, ICDAR 2024.* Athens, Greece, August 30 - September 4, pp. 55-73, 2024.<br>
 **DOI:** https://doi.org/10.1007/978-3-031-70552-6_4<br>
 **GitHub:** https://github.com/ufal/olimpic-icdar24
 
