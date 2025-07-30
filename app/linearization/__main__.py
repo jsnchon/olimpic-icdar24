@@ -23,6 +23,10 @@ linearize_parser.add_argument(
     "filename",
     type=str,
 )
+linearize_parser.add_argument(
+    "output_filename",
+    type=str
+)
 
 delinearize_parser = subparsers.add_parser(
     "delinearize",
@@ -33,6 +37,11 @@ delinearize_parser.add_argument(
     "filename",
     type=str,
 )
+delinearize_parser.add_argument(
+    "output_filename",
+    type=str
+)
+
 
 
 ###################
@@ -46,7 +55,7 @@ import xml.etree.ElementTree as ET
 from ..symbolic.part_to_score import part_to_score
 
 
-def linearize(filename: str):
+def linearize(filename: str, output_filename: str):
     if filename == "-":
         input_xml = sys.stdin.readline()
         mxl = MxlFile(ET.ElementTree(
@@ -56,7 +65,7 @@ def linearize(filename: str):
         mxl = MxlFile.load_mxl(filename)
     else:
         with open(filename, "r") as f:
-            input_xml = f.readline()
+            input_xml = f.read()
             mxl = MxlFile(ET.ElementTree(
                 ET.fromstring(input_xml))
             )
@@ -79,11 +88,11 @@ def linearize(filename: str):
     if filename == "-":
         print(output_lmx)
     else:
-        with open(os.path.splitext(filename) + ".musicxml", "r") as f:
+        with open(output_filename, "w") as f:
             print(output_lmx, file=f)
 
 
-def delinearize(filename: str):
+def delinearize(filename: str, output_filename):
     if filename == "-":
         input_lmx = sys.stdin.readline()
     else:
@@ -104,7 +113,7 @@ def delinearize(filename: str):
     if filename == "-":
         print(output_xml)
     else:
-        with open(os.path.splitext(filename) + ".musicxml", "r") as f:
+        with open(output_filename, "w") as f:
             print(output_xml, file=f)
 
 
@@ -117,9 +126,9 @@ args = parser.parse_args()
 
 # annotation commans
 if args.command_name == "linearize":
-    linearize(args.filename)
+    linearize(args.filename, args.output_filename)
 elif args.command_name == "delinearize":
-    delinearize(args.filename)
+    delinearize(args.filename, args.output_filename)
 else:
     parser.print_help()
     exit(2)
