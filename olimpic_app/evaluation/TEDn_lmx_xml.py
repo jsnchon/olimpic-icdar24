@@ -1,4 +1,4 @@
-from ..linearization.Delinearizer import Delinearizer
+from ..linearization.Delinearizer import Delinearizer, DelinearizeError
 from .TEDn import TEDn, TEDnResult
 from ..symbolic.Pruner import Pruner
 from ..symbolic.actual_durations_to_fractional import actual_durations_to_fractional
@@ -58,15 +58,18 @@ def TEDn_lmx_xml(
     actual_durations_to_fractional(gold_part) # evaluate in fractional durations
 
     # prepare predicted data
+    delinearize_errors = []
+    catastrophic_error = False
     try:
         delinearizer = Delinearizer(
             errout=errout,
             keep_fractional_durations=True # evaluate in fractional durations
         )
-        delinearizer.process_text(predicted_lmx)
+        _, delinearize_errors = delinearizer.process_text(predicted_lmx)
         predicted_part = delinearizer.part_element
     except Exception:
         # should not happen, unless there's a bug in the delinearizer
+        catastrophic_error = True
         if errout is not None:
             print("DELINEARIZATION CRASHED:", traceback.format_exc(), file=errout)
         predicted_part = ET.Element("part") # pretend empty output
@@ -94,5 +97,5 @@ def TEDn_lmx_xml(
     if debug:
         compare_parts(expected=gold_part, given=predicted_part)
 
-    return TEDn(predicted_part, gold_part)
+    return TEDn(predicted_part, gold_part).edit_cost, catastrophic_error, len(delinearize_errors)
     # return TEDnResult(1, 1, 1) # debugging

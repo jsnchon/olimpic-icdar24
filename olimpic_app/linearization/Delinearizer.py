@@ -7,7 +7,12 @@ from ..symbolic.PitchAlternator import PitchAlternator
 from ..symbolic.get_head_attributes import get_head_attributes
 from ..symbolic.sort_attributes import sort_attributes
 from ..symbolic.fractional_durations_to_actual import fractional_durations_to_actual
+from dataclasses import dataclass
 
+# this is for minor parse errors
+@dataclass
+class DelinearizeError:
+    message: str
 
 MEASURE_ITEM_ROOTS = set([
     *NOTE_ROOT_TOKENS,
@@ -54,6 +59,7 @@ class Delinearizer:
     ):
         self._errout = errout or io.StringIO()
         """Print errors and warnings here"""
+        self.error_list = [] # list of DelinearizeError instances (allows for easy well-formedness checks)
 
         self.keep_fractional_durations = keep_fractional_durations
 
@@ -74,12 +80,14 @@ class Delinearizer:
     def _error(self, token: Token, *values):
         header = f"[ERROR][Token '{token.terminal}' at position {token.position}]:"
         print(header, *values, file=self._errout)
+        self.error_list.append(DelinearizeError(message=values))
 
     def process_text(self, text: str) -> ET.Element:
         # reset within-part state
         self._fractional_measure_duration = None
         self._open_slur_count = 0
         self._pitch_alternator = PitchAlternator()
+        self.error_list = []
 
         # process LMX
         tokens = self.lex(text)
@@ -92,7 +100,7 @@ class Delinearizer:
         if not self.keep_fractional_durations:
             fractional_durations_to_actual(self.part_element)
         
-        return self.part_element
+        return self.part_element, self.error_list
     
     def _add_staves_head_element(self):
         max_clef_number = max(
