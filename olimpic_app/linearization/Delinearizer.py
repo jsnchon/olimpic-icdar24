@@ -7,7 +7,10 @@ from ..symbolic.PitchAlternator import PitchAlternator
 from ..symbolic.get_head_attributes import get_head_attributes
 from ..symbolic.sort_attributes import sort_attributes
 from ..symbolic.fractional_durations_to_actual import fractional_durations_to_actual
+from ..symbolic.part_to_score import part_to_score
 from dataclasses import dataclass
+from xml.dom import minidom
+import sys
 
 # this is for minor parse errors
 @dataclass
@@ -832,3 +835,24 @@ class Delinearizer:
             self._error(token, f"Unexpected prefix token for the '{tree.root.terminal}' token.")
         for token in tree.suffixes:
             self._error(token, f"Unexpected suffix token for the '{tree.root.terminal}' token.")
+
+def delinearize_helper(input_lmx: str):
+    delinearizer = Delinearizer(
+        errout=sys.stderr
+    )
+    delinearizer.process_text(input_lmx)
+    score_etree = part_to_score(delinearizer.part_element)
+    output_xml = ET.tostring(
+        score_etree.getroot(),
+        encoding="utf-8",
+        xml_declaration=True
+    )
+    dom = minidom.parseString(output_xml)
+    output_xml = dom.toprettyxml(indent="\t")
+
+    return output_xml
+
+# version that relies on storing intermediate info as files less
+def direct_delinearize(input_lmx: str):
+    output_xml = delinearize_helper(input_lmx)
+    return output_xml

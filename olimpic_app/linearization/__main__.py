@@ -1,8 +1,5 @@
-from xml.dom import minidom
 import argparse
 import sys
-import os
-
 
 ##########
 # Parser #
@@ -50,11 +47,9 @@ delinearize_parser.add_argument(
 ###################
 
 from .Linearizer import Linearizer
-from .Delinearizer import Delinearizer
+from .Delinearizer import delinearize_helper
 from ..symbolic.MxlFile import MxlFile
 import xml.etree.ElementTree as ET
-from ..symbolic.part_to_score import part_to_score
-
 
 def linearize(filename: str, output_filename: str):
     if filename == "-":
@@ -92,22 +87,6 @@ def linearize(filename: str, output_filename: str):
         with open(output_filename, "w") as f:
             print(output_lmx, file=f)
 
-def delinearize_helper(input_lmx: str):
-    delinearizer = Delinearizer(
-        errout=sys.stderr
-    )
-    delinearizer.process_text(input_lmx)
-    score_etree = part_to_score(delinearizer.part_element)
-    output_xml = ET.tostring(
-        score_etree.getroot(),
-        encoding="utf-8",
-        xml_declaration=True
-    )
-    dom = minidom.parseString(output_xml)
-    output_xml = dom.toprettyxml(indent="\t")
-
-    return output_xml
-
 def delinearize(filename: str, output_filename):
     if filename == "-":
         input_lmx = sys.stdin.readline()
@@ -117,16 +96,11 @@ def delinearize(filename: str, output_filename):
 
     output_xml = delinearize_helper(input_lmx)
 
-    if filename == "-":
+    if output_filename == "-":
         print(output_xml)
     else:
         with open(output_filename, "w") as f:
             print(output_xml, file=f)
-
-# version that relies on storing intermediate info as files less
-def direct_delinearize(input_lmx: str):
-    output_xml = delinearize_helper(input_lmx)
-    return output_xml
 
 ########
 # Main #
